@@ -20,6 +20,8 @@ elenco = {"ACCONCIATURE","BIGODINI","CASCO","DENTI","FRIZIONI",
 "PETTINE","PHON","PIEGA","RASOI","RETINA","SPAZZOLA",
 "SPECCHIO","TAGLIO","TINTURA"}
 
+alfabeto = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
+
 -- fa il print di una table in maniera figa
 local function printt(tbl)
     for k,v in pairs(tbl) do   
@@ -27,9 +29,41 @@ local function printt(tbl)
     end
 end
 
+-- verifica se un valore è contenuto in una table
+local function contains(tbl, val)
+    for _,v in pairs(tbl) do
+        if v == val then
+            return true
+        end
+    end
+    return false
+end
+   
+
+
+-- verifica se tutti i caratteri dello schema sono validi
+local function isValid (tab, val)
+    for _, value in pairs(tab) do
+        for _, v in pairs (value) do
+            if not contains(alfabeto, v) then return false end
+        end
+    end
+    return true
+end
+
+-- verifica se la shape dello schema è valido (rettangolare / quadrato)
+local function isRect(tbl)
+    for var = 1,#tbl do
+        if #tbl[var] ~= #tbl[1] then return false end
+    end
+    return true
+end
+
+
 -- shape di una tabella
 local function righe(tbl) return #tbl end
 local function colonne(tbl) return #tbl[1] end
+
 
 -- copia una tabella
 local function deep_copy(tbl)
@@ -43,7 +77,7 @@ local function deep_copy(tbl)
     end
     return copia
 end
-t = deep_copy(schema)
+
 
 -- ritorna il primo carattere della parola
 local function first(parola) return parola:sub(1,1) end
@@ -201,14 +235,13 @@ end
 
 
 -- 1) direzione orizzontale verso destra
-local function hor_dx(tbl,parola)
-    found = 0
+local function hor_dx(tbl,parola,found)
     posix = findChar(tbl,first(parola))
     for i,k in pairs(posix) do
         -- verifico che non sforo con l'indice
         if k[2] + (#parola-1) <= colonne(tbl) then
             if read_hor_dx(tbl,k[1],k[2],#parola) == parola then
-                print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
+                --print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
                 oscura_hor_dx(t,k[1],k[2],#parola)
                 found = 1
                 break
@@ -219,14 +252,13 @@ local function hor_dx(tbl,parola)
 end
 
 -- 2) direzione orizzontale verso sinistra
-local function hor_sx(tbl,parola)
-    found = 0
+local function hor_sx(tbl,parola, found)
     posix = findChar(tbl,first(parola))
     for i,k in pairs(posix) do
         -- verifico che non sforo con l'indice
         if k[2] - #parola  >= 0 then
             if read_hor_sx(tbl,k[1],k[2],#parola) == parola then
-                print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
+                --print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
                 oscura_hor_sx(t,k[1],k[2],#parola)
                 found = 1
                 break
@@ -237,14 +269,13 @@ local function hor_sx(tbl,parola)
 end
 
 -- 3) direzione verticale verso alto
-local function ver_up(tbl,parola)
-    found = 0
+local function ver_up(tbl,parola,found)
     posix = findChar(tbl,first(parola))
     for i,k in pairs(posix) do
         -- verifico che non sforo con l'indice
         if k[1] - #parola  >= 0 then
             if read_ver_up(tbl,k[1],k[2],#parola) == parola then
-                print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
+                --print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
                 oscura_ver_up(t,k[1],k[2],#parola)
                 found = 1
                 break
@@ -255,14 +286,13 @@ local function ver_up(tbl,parola)
 end
 
 -- 4) direzione verticale verso basso
-local function ver_down(tbl,parola)
-    found = 0
+local function ver_down(tbl,parola,found)
     posix = findChar(tbl,first(parola))
     for i,k in pairs(posix) do
         -- verifico che non sforo con l'indice
         if k[1] + #parola -1  <= righe(tbl) then
             if read_ver_down(tbl,k[1],k[2],#parola) == parola then
-                print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
+                --print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
                 oscura_ver_down(t,k[1],k[2],#parola)
                 found = 1
                 break
@@ -273,14 +303,13 @@ local function ver_down(tbl,parola)
 end
 
 -- 5) direzione diagonale positiva verso alto
-local function diagpos_up(tbl,parola)
-    found = 0
+local function diagpos_up(tbl,parola,found)
     posix = findChar(tbl,first(parola))
     for i,k in pairs(posix) do
         -- verifico che non sforo con l'indice
         if k[2] + (#parola-1) <= colonne(tbl) and k[1] - #parola  >= 0  then
             if read_diagpos_up(tbl,k[1],k[2],#parola) == parola then
-                print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
+                --print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
                 oscura_diagpos_up(t,k[1],k[2],#parola)
                 found = 1
                 break
@@ -291,14 +320,13 @@ local function diagpos_up(tbl,parola)
 end
 
 -- 6) direzione diagonale positiva verso basso
-local function diagpos_down(tbl,parola)
-    found = 0
+local function diagpos_down(tbl,parola,found)
     posix = findChar(tbl,first(parola))
     for i,k in pairs(posix) do
         -- verifico che non sforo con l'indice
         if k[2] - #parola  >= 0 and k[1] + #parola -1  <= righe(tbl)then
             if read_diagpos_down(tbl,k[1],k[2],#parola) == parola then
-                print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
+                --print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
                 oscura_diagpos_down(t,k[1],k[2],#parola)
                 found = 1
                 break
@@ -309,14 +337,13 @@ local function diagpos_down(tbl,parola)
 end
 
 -- 7) direzione diagonale negativa verso alto
-local function diagneg_up(tbl,parola)
-    found = 0
+local function diagneg_up(tbl,parola,found)
     posix = findChar(tbl,first(parola))
     for i,k in pairs(posix) do
         -- verifico che non sforo con l'indice
         if k[2] - #parola  >= 0 and (k[1] - #parola  >= 0) then
             if read_diagneg_up(tbl,k[1],k[2],#parola) == parola then
-                print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
+                --print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
                 oscura_diagneg_up(t,k[1],k[2],#parola)
                 found = 1
                 break
@@ -327,14 +354,13 @@ local function diagneg_up(tbl,parola)
 end
 
 -- 8) direzione diagonale negativa verso basso
-local function diagneg_down(tbl,parola)
-    found = 0
+local function diagneg_down(tbl,parola,found)
     posix = findChar(tbl,first(parola))
     for i,k in pairs(posix) do
         -- verifico che non sforo con l'indice
         if k[2] + (#parola-1) <= colonne(tbl) and k[1] + #parola -1  <= righe(tbl) then
             if read_diagneg_down(tbl,k[1],k[2],#parola) == parola then
-                print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
+                --print(parola.. " trovata! (pos:"..k[1]..","..k[2]..")")
                 oscura_diagneg_down(t,k[1],k[2],#parola)
                 found = 1
                 break
@@ -352,16 +378,21 @@ end
 -- ...
 --
 
+
 local function solve(schema, elenco)
     for _,parola in pairs(elenco) do
-        hor_dx(schema,parola) 
-        hor_sx(schema,parola)
-        ver_up(schema,parola)
-        ver_down(schema,parola)
-        diagpos_up(schema,parola)
-        diagpos_down(schema,parola)
-        diagneg_up(schema,parola)
-        diagneg_down(schema,parola)
+        found = 0
+        found = hor_dx(schema,parola,found) 
+        found = hor_sx(schema,parola,found)
+        found = ver_up(schema,parola,found)
+        found = ver_down(schema,parola,found)
+        found = diagpos_up(schema,parola,found)
+        found = diagpos_down(schema,parola,found)
+        found = diagneg_up(schema,parola,found)
+        found = diagneg_down(schema,parola,found)
+
+        -- una parola dell'elenco non è presente nello schema
+        if found == 0 then print("?") os.exit() end
     end
 end
 
@@ -377,7 +408,11 @@ local function read_result(tbl)
     return res
 end
 
-solve(schema, elenco)
+t = deep_copy(schema)
+if isValid(schema) and isRect(schema) then solve(schema,elenco) else print("?") end
+r = read_result(t)
+if r == "" then print("?") else print(r) end
+
 -- verifico se l'oscurazione è andata bene
-printt(t)
-print("La parola finale è: "..read_result(t))
+--printt(t)
+--print("La parola finale è: "..read_result(t))
