@@ -1,7 +1,7 @@
 # Crosswords
-Risolutore scritto in LUA del ben conosciuto gioco delle **parole crociate** (detto anche crucipuzzle o crosswords)!
+Solver written in LUA of the well-known crossword game (also called crucipuzzle or crosswords)!
 
-**Lua** è un linguaggio multiparadigma adatto a scrivere codice imperativo, funzionale e orientato agli oggetti.
-Il solver è disponibile in due formati, uno sviluppato tramite il **paradigma procedurale** e l'altro tramite **paradigma funzionale**.
+Lua is a multi-paradigm language suitable for writing imperative, functional and object-oriented code. 
+The solver is available in two formats, one developed via procedural paradigm and the other via functional paradigm.
 
-La descrizione del progetto è reperibile nel file ProgettoCrossword.pdf presente nel repo.
+A description of the project can be found in the **ProjectCrossword.pdf** file in the repo.
